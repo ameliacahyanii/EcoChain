@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #10b981;
+  --color-primary-hover: #059669;
+  --color-primary-light: #ecfdf5;
+
+  --color-secondary: #14b8a6;
+  --color-secondary-hover: #0f766e;
+
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+
+  --color-neutral-bg: #f8fafc;
+  --color-neutral-text: #0f172a;
+  --color-neutral-border: #e2e8f0;
+
+  --font-sans:
+    var(--font-sans), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-heading:
+    var(--font-heading), "Outfit", system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-heading: "Outfit", sans-serif;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphism Utility Classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 20px 30px -10px rgba(16, 185, 129, 0.08),
+    0 10px 15px -5px rgba(0, 0, 0, 0.04);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Glow Background Effects */
+.bg-glow-emerald {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(16, 185, 129, 0.15),
+    transparent 70%
+  );
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
