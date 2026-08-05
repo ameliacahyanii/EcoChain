@@ -14,11 +14,12 @@ import {
   Flame,
   HelpCircle,
   Sparkles,
+  LucideIcon,
 } from "lucide-react";
 
 interface ComponentDetail {
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   valueEstimate: string;
   description: string;
   safetyTip: string;
@@ -29,7 +30,7 @@ interface DisassemblyStep {
   title: string;
   instruction: string;
   warning?: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
 }
 
 export default function EcoGuidePage() {

@@ -19,12 +19,13 @@ import {
   LogOut,
   LogIn,
   RefreshCw,
+  LucideIcon,
 } from "lucide-react";
 
 interface NavItem {
   label: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
 }
 
 const ROLE_DOT: Record<UserRole, string> = {
