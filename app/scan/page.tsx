@@ -228,7 +228,7 @@ export default function ScanPage() {
             EcoScan AI Pipeline
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
-            4-Stage AI Pipeline: OpenCV Quality $\rightarrow$ Gemini $\rightarrow$ Rule Engine $\rightarrow$ Confidence Gate
+            4-Stage AI Pipeline: OpenCV Quality → Gemini → Rule Engine → Confidence Gate
           </p>
         </div>
       </div>
@@ -410,7 +410,7 @@ export default function ScanPage() {
                     {!gate.is_final_automatic && (
                       <Link href="/admin/verification" className="mt-1 inline-block">
                         <Button variant="outline" className="text-xs py-1.5 px-3 border-amber-400 bg-white hover:bg-amber-100 text-amber-900">
-                          Lihat Antrean Operator EcoPoint $\rightarrow$
+                          Lihat Antrean Operator EcoPoint →
                         </Button>
                       </Link>
                     )}
