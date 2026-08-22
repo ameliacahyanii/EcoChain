@@ -119,7 +119,7 @@ Berikan respon HANYA berupa JSON valid tanpa format markdown:
 }`;
 
       let responseText = "";
-      const modelsToTry = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+      const modelsToTry = ["gemini-3.6-flash", "gemini-3.6-pro", "gemini-2.5-flash"];
       let lastErrorMessage = "";
 
       for (const modelName of modelsToTry) {
