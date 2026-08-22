@@ -7,7 +7,7 @@ import {
   LineChart as ChartIcon,
   ArrowLeft,
   Leaf,
-  Scale,
+  BarChart2,
   Users,
   Download,
   Calendar,
@@ -144,7 +144,7 @@ export default function ImpactDashboardPage() {
             </span>
           </div>
           <div className="p-3.5 bg-[#DCFCE7] text-[#16A34A] rounded-2xl">
-            <Scale className="w-8 h-8 stroke-[2.5px]" />
+            <BarChart2 className="w-8 h-8 stroke-[2.5px]" />
           </div>
         </Card>
 

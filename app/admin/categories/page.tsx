@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button, Card } from "@/components/ui";
-import { Tags, ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react";
+import { Tags, ArrowLeft, Plus, Edit, Trash } from "lucide-react";
 
 export default function AdminCategoriesPage() {
   return (
@@ -79,13 +79,13 @@ export default function AdminCategoriesPage() {
                   className="p-2 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 transition-colors border border-slate-200/60 hover:border-emerald-200/80"
                   aria-label="Edit kategori"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <Edit className="w-4 h-4" />
                 </button>
                 <button
                   className="p-2 rounded-xl bg-slate-50 hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors border border-slate-200/60 hover:border-red-200/80"
                   aria-label="Hapus kategori"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash className="w-4 h-4" />
                 </button>
               </div>
             </div>

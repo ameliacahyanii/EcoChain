@@ -15,7 +15,11 @@ EcoChain beroperasi secara **asset-light**:
 
 ## 🚀 Fitur-Fitur Utama (EcoChain Suite)
 
-1. 🔍 **EcoScan AI** (`/scan`) — Pemindai foto sampah/barang bekas berbasis **Google Gemini 2.5 Flash** yang secara otomatis mengidentifikasi kategori limbah, estimasi bobot, skor kemurnian, dan nilai pasar real-time.
+1. 🔍 **EcoScan AI** (`/scan`) — Pemindai foto sampah & rongsokan berbasis **Multi-Stage AI Classification Pipeline**:
+   - 👁️ **Stage 1 (OpenCV)**: Image quality check (Laplacian blur variance, luminance histogram, & resolusi).
+   - 🤖 **Stage 2 (Gemini 2.5 Flash)**: Vision & NLP (identifikasi material, deteksi komponen berbahaya, & saran daur ulang).
+   - 🧮 **Stage 3 (Rule Engine)**: Dynamic price database lookup & penyesuaian multiplier kondisi material.
+   - 🛡️ **Stage 4 (Confidence Gate)**: Decision layer ($\ge 0.75$ confidence) untuk penetapan harga otomatis vs eskalasi ke operator EcoPoint.
 2. 🛠️ **EcoGuide AI** (`/ecoguide`) — Panduan pembongkaran aman *e-waste* (elektronik bekas) bertahap untuk mengekstraksi komponen bernilai ekonomi tinggi (tembaga, PCB/RAM, baterai lithium).
 3. 🚚 **EcoRoute** (`/pickup`) — Engine penjemputan *on-demand* berbasis koordinat GPS dengan **Multi-Tier Radius Fallback Engine** (Tier 1: Radius 2km Pemulung Mitra $\rightarrow$ Tier 2: Radius 5km $\rightarrow$ Tier 3: Kurir 3PL).
 4. 📦 **EcoHub** (`/dashboard/pengepul`) — Dashboard manajemen inventaris gudang pengepul mitra untuk konsolidasi stok, analitik volume masuk 7 hari, dan pembentukan order tonase besar.
@@ -43,7 +47,11 @@ EcoChain memiliki 4 peran pengguna (*User Roles*) utama yang dikontrol melalui s
 EcoChain Ecosystem
 ├── Frontend & Framework : Next.js 16 (App Router), React 19, TypeScript
 ├── Styling & Design System : Tailwind CSS v4, Lucide React Icons
-├── AI & Vision Engine   : Google GenAI SDK (@google/genai) — Gemini 2.5 Flash
+├── AI & Vision Pipeline : 4-Stage Classification Engine:
+│                          1. OpenCV Image Quality Processing (Laplacian Blur & Luminance)
+│                          2. Google Gemini 2.5 Flash (Multimodal Vision & NLP Safety)
+│                          3. Knowledge Lookup & Rule Engine (Condition Multiplier Matrix)
+│                          4. Confidence Gate (Decision Layer & EcoPoint Operator Escalate)
 ├── Database & Auth      : Supabase PostgreSQL, @supabase/supabase-js
 ├── Payment & Escrow     : Midtrans Payment Gateway (EcoVault)
 ├── Data Visualization   : Recharts
@@ -54,20 +62,37 @@ EcoChain Ecosystem
 
 ## 🧠 Detail Arsitektur AI (AI Engine Specification)
 
-EcoChain mengintegrasikan kecerdasan buatan pada 5 lapisan alur bisnis:
+EcoChain mengintegrasikan kecerdasan buatan pada 5 lapisan alur bisnis dengan **4-Stage Classification Pipeline** pada EcoScan:
 
 ```
-[ Input Gambar / Data Sensor ]
+[ Upload Foto Sampah / Limbah ]
               │
               ▼
-    ┌──────────────────┐
-    │   EcoScan AI     │ ◄── Google Gemini 2.5 Flash (Multimodal Vision)
-    └─────────┬────────┘     Zero-Shot Classification + Smart Heuristic Fallback
-              │
-              ▼
-    ┌──────────────────┐
-    │ Dynamic Pricing  │ ◄── P_total = W_est * P_base * Q_purity * (1 + Delta_market)
-    └─────────┬────────┘
+    ┌─────────────────────────┐
+    │ Stage 1: OpenCV Check   │ ◄── Laplacian Variance (Blur) + Luminance (Brightness)
+    └──────────┬──────────────┘     Filtering Foto Buram/Gelap Sebelum Masuk Model
+               │
+               ▼
+    ┌─────────────────────────┐
+    │ Stage 2: Gemini Vision  │ ◄── Identifikasi Material, Grade Kondisi,
+    └──────────┬──────────────┘     Deteksi Komponen Berbahaya & Recommendations NLP
+               │
+               ▼
+    ┌─────────────────────────┐
+    │ Stage 3: Rule Engine    │ ◄── Lookup Dynamic Price Database (waste_categories)
+    └──────────┬──────────────┘     P_final = P_base * Multiplier_Kondisi * Safety_Factor
+               │
+               ▼
+    ┌─────────────────────────┐
+    │ Stage 4: Confidence Gate│ ◄── Confidence >= 0.75 & Clear Category Margin?
+    └─────┬───────────────┬───┘
+          │               │
+      (Ya)│               │(Tidak / Confidence Rendah / Ambigu)
+          ▼               ▼
+┌───────────────────┐ ┌───────────────────────────────────┐
+│ AUTOMATIC FINAL   │ │ ECOPOINT MANUAL VERIFICATION      │
+│ PRICE             │ │ (Routing ke Operator EcoPoint)    │
+└───────────────────┘ └───────────────────────────────────┘
               │
               ▼
     ┌──────────────────┐

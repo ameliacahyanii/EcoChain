@@ -5,23 +5,71 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
 import {
-  /* Ikon Final (Sudah dipastikan tersedia di lucide-react) */
   ArrowLeft,
-  ScanLine, // Menggantikan ScanFace & Viewfinder (Header & Tombol Scan)
-  Upload, // Tetap sama
-  Loader2, // Menggantikan Orbit (Loading)
+  ScanLine,
+  Upload,
+  Loader2,
   Plus,
   Minus,
   CheckCircle2,
-  Cpu, // Menggantikan Microchip (Panduan Elektronik)
-  Route, // Menggantikan Truck (Jemput)
-  Store, // Menggantikan MapPin (Antar ke EcoPoint)
+  Cpu,
+  Route,
+  Store,
   AlertTriangle,
   Info,
-  Coins, // Menggantikan DollarSign (Harga)
-  Package, // Tetap sama
+  Coins,
+  ShieldCheck,
+  ShieldAlert,
+  Sparkles,
+  Calculator,
+  Eye,
+  Layers,
+  ChevronDown,
+  ChevronUp,
   ClipboardList,
 } from "lucide-react";
+
+interface PipelineSteps {
+  stage1_opencv: {
+    passed: boolean;
+    resolution: { width: number; height: number; isMinResolutionPassed: boolean };
+    luminance: { score: number; status: "good" | "too_dark" | "overexposed" };
+    blur: { sharpnessScore: number; isClear: boolean };
+    warnings: string[];
+    recommendation: string;
+  };
+  stage2_gemini: {
+    category_name: string;
+    condition_grade: "Grade A" | "Grade B" | "Grade C";
+    hazardous_component?: string;
+    nlp_recommendation: string;
+    raw_confidence: number;
+    reasoning: string;
+  };
+  stage3_rule_engine: {
+    category_name: string;
+    unit: string;
+    weight_or_quantity: number;
+    base_price_per_unit: number;
+    condition_grade: "Grade A" | "Grade B" | "Grade C";
+    condition_multiplier: number;
+    volume_bonus_multiplier: number;
+    adjusted_unit_price: number;
+    estimated_total_price: number;
+    hazardous_flag: boolean;
+    breakdown_notes: string[];
+  };
+  stage4_confidence_gate: {
+    decision: "AUTOMATIC_FINAL_PRICE" | "OPERATOR_MANUAL_VERIFICATION";
+    is_final_automatic: boolean;
+    confidence_percentage: number;
+    threshold_percentage: number;
+    badge_text: string;
+    status_color: "emerald" | "amber";
+    routing_target: string;
+    reason: string;
+  };
+}
 
 interface ScanResponseData {
   success: boolean;
@@ -38,9 +86,11 @@ interface ScanResponseData {
   estimated_total_price: number;
   confidence: number;
   reasoning: string;
+  nlp_recommendation?: string;
   is_electronics: boolean;
   ecoguide_available: boolean;
   fallback_needed?: boolean;
+  pipeline_steps?: PipelineSteps;
   available_categories?: Array<{
     id: string;
     name: string;
@@ -55,15 +105,13 @@ export default function ScanPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const [step, setStep] = useState<
-    "upload" | "loading" | "result" | "fallback"
-  >("upload");
+  const [step, setStep] = useState<"upload" | "loading" | "result" | "fallback">("upload");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<ScanResponseData | null>(null);
   const [currentWeight, setCurrentWeight] = useState<number>(1.0);
-  const [selectedManualCategory, setSelectedManualCategory] =
-    useState<any>(null);
+  const [selectedManualCategory, setSelectedManualCategory] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPipelineDetails, setShowPipelineDetails] = useState<boolean>(true);
 
   // Default category fallback grid items
   const fallbackCategoriesList = scanResult?.available_categories || [
@@ -125,10 +173,8 @@ export default function ScanPage() {
     },
   ];
 
-  // Handle File Upload & Trigger Scan API
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  // Handle File Upload & Trigger Scan API Multi-Stage Pipeline
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -161,15 +207,14 @@ export default function ScanPage() {
       } else {
         setStep("fallback");
         setErrorMessage(
-          data.reasoning ||
-            "Belum bisa dikenali otomatis, silakan pilih kategori manual.",
+          data.reasoning || "Belum bisa dikenali otomatis, silakan pilih kategori manual."
         );
       }
     } catch (err) {
       console.error("Scan error:", err);
       setStep("fallback");
       setErrorMessage(
-        "Koneksi lambat atau terputus. Silakan pilih kategori secara manual di bawah.",
+        "Koneksi lambat atau terputus. Silakan pilih kategori secara manual di bawah."
       );
     }
   };
@@ -182,9 +227,11 @@ export default function ScanPage() {
     });
   };
 
-  // Calculate current total price
+  // Calculate current total price with condition grade rules if available
   const activeCategory = selectedManualCategory || scanResult?.category;
-  const unitPrice = activeCategory?.base_price_per_unit || 0;
+  const conditionMultiplier = scanResult?.pipeline_steps?.stage3_rule_engine.condition_multiplier || 1.0;
+  const baseUnitPrice = activeCategory?.base_price_per_unit || 0;
+  const unitPrice = Math.round(baseUnitPrice * conditionMultiplier);
   const calculatedTotalPrice = Math.round(unitPrice * currentWeight);
 
   const isElectronicsItem =
@@ -193,6 +240,9 @@ export default function ScanPage() {
     activeCategory?.name.toLowerCase().includes("laptop") ||
     activeCategory?.name.toLowerCase().includes("smartphone");
 
+  const pipeline = scanResult?.pipeline_steps;
+  const gate = pipeline?.stage4_confidence_gate;
+
   return (
     <main className="min-h-screen bg-slate-50/70 p-4 sm:p-6 max-w-2xl mx-auto flex flex-col gap-6 pb-24">
       {/* Header */}
@@ -200,7 +250,7 @@ export default function ScanPage() {
         <Link href="/">
           <Button
             variant="outline"
-            className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[80px] min-h-[44px] sm:min-h-[50px] rounded-xl border-slate-200/80 shadow-sm bg-white/80 backdrop-blur-sm flex items-center justify-center"
+            className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[80px] min-h-[44px] sm:min-h-[50px] rounded-xl border-slate-200/80 shadow-xs bg-white/80 backdrop-blur-xs flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
@@ -210,10 +260,10 @@ export default function ScanPage() {
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 text-white flex items-center justify-center shadow-md shrink-0">
               <ScanLine className="w-4 h-4" />
             </div>
-            EcoScan AI
+            EcoScan AI Pipeline
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5 sm:mt-1">
-            Pindai foto sampah & cek estimasi harga pasar
+          <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+            4-Stage AI Pipeline: OpenCV Quality $\rightarrow$ Gemini $\rightarrow$ Rule Engine $\rightarrow$ Confidence Gate
           </p>
         </div>
       </div>
@@ -222,22 +272,20 @@ export default function ScanPage() {
       {/* STEP 1: LAYAR PERTAMA (UPLOAD / CAMERA INPUT)                        */}
       {/* ==================================================================== */}
       {step === "upload" && (
-        <Card className="flex flex-col items-center justify-center p-10 sm:p-14 text-center border-2 border-dashed border-teal-500/40 min-h-[450px] gap-8 bg-gradient-to-br from-teal-50/40 via-white to-white shadow-xl shadow-slate-200/50">
+        <Card className="flex flex-col items-center justify-center p-8 sm:p-12 text-center border-2 border-dashed border-teal-500/40 min-h-[450px] gap-8 bg-gradient-to-br from-teal-50/40 via-white to-white shadow-xl shadow-slate-200/50">
           <div className="relative">
             <div className="absolute -inset-6 rounded-full bg-teal-500/15 blur-2xl animate-pulse" />
             <div className="relative w-28 h-28 rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-500 text-white flex items-center justify-center shadow-2xl shadow-teal-500/30">
-              {/* Gunakan ScanLine untuk tombol utama juga */}
               <ScanLine className="w-12 h-12 stroke-[2px]" />
             </div>
           </div>
 
           <div className="max-w-md flex flex-col gap-3">
             <h2 className="text-2xl font-black text-slate-900 font-heading">
-              Ambil Foto Barang
+              Pindai Sampah / Rongsok
             </h2>
             <p className="text-base text-slate-600 leading-relaxed font-medium">
-              Arahkan kamera ke sampah plastik, kertas, logam, atau elektronik
-              bekas Anda.
+              Ambil foto sampah plastik, kertas, logam, atau e-waste untuk diuji oleh 4-Stage AI Pipeline secara otomatis.
             </p>
           </div>
 
@@ -258,7 +306,7 @@ export default function ScanPage() {
             className="hidden"
           />
 
-          {/* Large Camera Trigger Button */}
+          {/* Action Buttons */}
           <div className="flex flex-col gap-4 w-full max-w-sm">
             <Button
               variant="secondary"
@@ -283,84 +331,219 @@ export default function ScanPage() {
       )}
 
       {/* ==================================================================== */}
-      {/* STEP 2: LAYAR KEDUA (LOADING STATE)                                 */}
+      {/* STEP 2: LAYAR KEDUA (LOADING STATE DEEP PIPELINE)                    */}
       {/* ==================================================================== */}
       {step === "loading" && (
-        <Card className="flex flex-col items-center justify-center p-14 text-center min-h-[400px] gap-6 bg-white shadow-xl shadow-slate-200/50 rounded-3xl">
+        <Card className="flex flex-col items-center justify-center p-12 text-center min-h-[420px] gap-6 bg-white shadow-xl shadow-slate-200/50 rounded-3xl">
           <div className="relative flex items-center justify-center w-28 h-28">
             <div className="absolute inset-0 rounded-full border-2 border-teal-300/30 animate-ping" />
             <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-500 text-white flex items-center justify-center shadow-xl shadow-teal-500/25">
-              {/* Gunakan Loader2 */}
               <Loader2 className="w-12 h-12 animate-spin stroke-[2px]" />
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 max-w-sm">
+          <div className="flex flex-col gap-3 max-w-sm">
             <h2 className="text-2xl font-black text-slate-900 font-heading">
-              Menganalisis Gambar...
+              Memproses Multi-Stage AI...
             </h2>
-            <p className="text-base text-slate-600 font-medium leading-relaxed">
-              EcoScan AI sedang mengidentifikasi jenis barang dan estimasi
-              harganya
-            </p>
+            <div className="flex flex-col gap-2 text-left bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-600">
+              <div className="flex items-center gap-2 text-teal-600">
+                <CheckCircle2 className="w-4 h-4" /> 1. OpenCV Image Quality Check
+              </div>
+              <div className="flex items-center gap-2 text-teal-600">
+                <CheckCircle2 className="w-4 h-4" /> 2. Gemini Computer Vision & NLP
+              </div>
+              <div className="flex items-center gap-2 text-teal-600">
+                <CheckCircle2 className="w-4 h-4" /> 3. Rule Engine + Price Knowledge Lookup
+              </div>
+              <div className="flex items-center gap-2 text-amber-600 animate-pulse">
+                <Loader2 className="w-4 h-4 animate-spin" /> 4. Confidence Gate Decision Layer
+              </div>
+            </div>
           </div>
         </Card>
       )}
 
       {/* ==================================================================== */}
-      {/* STEP 3: LAYAR KETIGA (HASIL DETEKSI & OPSI LANJUTAN)                 */}
+      {/* STEP 3: LAYAR KETIGA (HASIL DETEKSI PIPELINE & VERIFIKASI)           */}
       {/* ==================================================================== */}
       {(step === "result" || (step === "fallback" && selectedManualCategory)) &&
         activeCategory && (
           <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300">
+            {/* CARD HASIL UTAMA */}
             <Card className="flex flex-col gap-6 p-6 sm:p-8 bg-white border border-slate-200/80 shadow-xl shadow-slate-200/50 rounded-3xl">
-              {/* Header & Confidence Badge */}
+              {/* Header & Confidence Gate Badge */}
               <div className="flex items-start justify-between gap-3 border-b border-slate-200/60 pb-5">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Kategori Terdeteksi
+                    Hasil Klasifikasi AI Pipeline
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-heading">
                     {activeCategory.name}
                   </h2>
                 </div>
-                <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-extrabold rounded-full border border-emerald-200/80 shrink-0 shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  {scanResult?.confidence || 85}%
-                </span>
+                {gate ? (
+                  <span
+                    className={`px-3.5 py-1.5 text-xs font-extrabold rounded-full border shadow-2xs flex items-center gap-1.5 shrink-0 ${
+                      gate.is_final_automatic
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-amber-50 text-amber-800 border-amber-300"
+                    }`}
+                  >
+                    {gate.is_final_automatic ? (
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <ShieldAlert className="w-4 h-4 text-amber-600" />
+                    )}
+                    {gate.confidence_percentage}% Confidence
+                  </span>
+                ) : (
+                  <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-extrabold rounded-full border border-emerald-200 shrink-0 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    {scanResult?.confidence || 85}%
+                  </span>
+                )}
               </div>
 
-              {/* Photo Preview Thumbnail & Reasoning */}
+              {/* Photo Preview Thumbnail & NLP Recommendation */}
               {previewUrl && (
-                <div className="flex items-start sm:items-center gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/60">
+                <div className="flex items-start gap-4 bg-slate-50/90 p-4 rounded-2xl border border-slate-200/70">
                   <img
                     src={previewUrl}
                     alt="Foto Sampah"
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-sm shrink-0"
+                    className="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0"
                   />
-                  <div className="text-sm text-slate-600 leading-relaxed">
-                    <p className="font-extrabold text-slate-800 text-sm">
-                      Hasil Analisis AI
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                      {scanResult?.reasoning ||
-                        "Identifikasi otomatis berdasarkan visual."}
+                  <div className="text-sm text-slate-600 leading-relaxed flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5 font-extrabold text-slate-900 text-sm">
+                      <Sparkles className="w-4 h-4 text-teal-600" />
+                      <span>Rekomendasi Penanganan AI</span>
+                    </div>
+                    <p className="text-xs text-slate-700 font-medium bg-white p-2.5 rounded-xl border border-slate-200">
+                      {scanResult?.nlp_recommendation || scanResult?.reasoning || "Aman didaur ulang."}
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Estimasi Berat dengan Tombol Besar +/- */}
+              {/* DECISION GATE BANNER */}
+              {gate && (
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    gate.is_final_automatic
+                      ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
+                      : "bg-amber-50/90 border-amber-300 text-amber-900"
+                  }`}
+                >
+                  {gate.is_final_automatic ? (
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  ) : (
+                    <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <span className="font-extrabold text-sm">{gate.badge_text}</span>
+                    <p className="text-xs font-medium leading-relaxed">{gate.reason}</p>
+                    {!gate.is_final_automatic && (
+                      <Link href="/admin/verification" className="mt-1 inline-block">
+                        <Button variant="outline" className="text-xs py-1.5 px-3 border-amber-400 bg-white hover:bg-amber-100 text-amber-900">
+                          Lihat Antrean Operator EcoPoint $\rightarrow$
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ============================================================== */}
+              {/* COLLAPSIBLE 4-STAGE PIPELINE DIAGNOSTICS CARD                 */}
+              {/* ============================================================== */}
+              {pipeline && (
+                <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50">
+                  <button
+                    type="button"
+                    onClick={() => setShowPipelineDetails(!showPipelineDetails)}
+                    className="w-full px-4 py-3 flex items-center justify-between text-xs font-black uppercase text-slate-600 bg-slate-100/80 hover:bg-slate-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-teal-600" />
+                      <span>Rincian Diagnostik Pipeline AI (4 Stage)</span>
+                    </div>
+                    {showPipelineDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+
+                  {showPipelineDetails && (
+                    <div className="p-4 flex flex-col gap-3 text-xs text-slate-700">
+                      {/* Stage 1 */}
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-1">
+                        <div className="flex items-center justify-between font-bold text-slate-900">
+                          <span className="flex items-center gap-1.5">
+                            <Eye className="w-3.5 h-3.5 text-teal-600" /> Stage 1: OpenCV Quality Check
+                          </span>
+                          <span className={pipeline.stage1_opencv.passed ? "text-emerald-600" : "text-amber-600"}>
+                            {pipeline.stage1_opencv.passed ? "PASSED" : "WARNING"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          Pencahayaan: {pipeline.stage1_opencv.luminance.score}/255 ({pipeline.stage1_opencv.luminance.status}) | Sharpness: {pipeline.stage1_opencv.blur.sharpnessScore}%
+                        </p>
+                      </div>
+
+                      {/* Stage 2 */}
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-1">
+                        <div className="flex items-center justify-between font-bold text-slate-900">
+                          <span className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-teal-600" /> Stage 2: Gemini Vision & NLP
+                          </span>
+                          <span className="text-teal-700 font-extrabold">
+                            {pipeline.stage2_gemini.condition_grade}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          Kondisi: {pipeline.stage2_gemini.condition_grade} | Hazardous: {pipeline.stage2_gemini.hazardous_component}
+                        </p>
+                      </div>
+
+                      {/* Stage 3 */}
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-1">
+                        <div className="flex items-center justify-between font-bold text-slate-900">
+                          <span className="flex items-center gap-1.5">
+                            <Calculator className="w-3.5 h-3.5 text-teal-600" /> Stage 3: Rule Engine Lookup
+                          </span>
+                          <span className="text-slate-900 font-bold">
+                            Rp {pipeline.stage3_rule_engine.adjusted_unit_price.toLocaleString("id-ID")}/{pipeline.stage3_rule_engine.unit}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex flex-col gap-0.5">
+                          {pipeline.stage3_rule_engine.breakdown_notes.map((note, idx) => (
+                            <span key={idx}>• {note}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Stage 4 */}
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-1">
+                        <div className="flex items-center justify-between font-bold text-slate-900">
+                          <span className="flex items-center gap-1.5">
+                            <ShieldCheck className="w-3.5 h-3.5 text-teal-600" /> Stage 4: Confidence Gate
+                          </span>
+                          <span className={`font-extrabold ${gate?.is_final_automatic ? "text-emerald-600" : "text-amber-600"}`}>
+                            {gate?.decision}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500">{gate?.reason}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Estimasi Berat dengan Tombol +/- */}
               <div className="flex flex-col gap-4 bg-slate-50/70 p-5 rounded-2xl border border-slate-200/70">
                 <div className="flex items-center justify-between">
                   <label className="text-base font-extrabold text-slate-900 font-heading">
-                    Estimasi Berat
+                    Estimasi Berat / Kuantitas
                   </label>
-                  <span className="text-xs font-bold text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">
-                    Satuan:{" "}
-                    <span className="text-slate-900">
-                      {activeCategory.unit}
-                    </span>
+                  <span className="text-xs font-bold text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+                    Satuan: <span className="text-slate-900">{activeCategory.unit}</span>
                   </span>
                 </div>
 
@@ -368,7 +551,7 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={() => handleAdjustWeight(-0.5)}
-                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
                   >
                     <Minus className="w-5 h-5 stroke-[2.5px]" />
                   </button>
@@ -380,11 +563,9 @@ export default function ScanPage() {
                       min="0.1"
                       value={currentWeight}
                       onChange={(e) =>
-                        setCurrentWeight(
-                          Math.max(0.1, parseFloat(e.target.value) || 0.1),
-                        )
+                        setCurrentWeight(Math.max(0.1, parseFloat(e.target.value) || 0.1))
                       }
-                      className="w-20 sm:w-28 text-center text-2xl sm:text-3xl font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl py-2.5 sm:py-3 focus:ring-4 focus:ring-teal-500/15 focus:outline-none font-heading shadow-sm"
+                      className="w-20 sm:w-28 text-center text-2xl sm:text-3xl font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl py-2.5 sm:py-3 focus:ring-4 focus:ring-teal-500/15 focus:outline-hidden font-heading shadow-2xs"
                     />
                     <span className="text-base sm:text-lg font-bold text-slate-500 shrink-0">
                       {activeCategory.unit}
@@ -394,42 +575,39 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={() => handleAdjustWeight(0.5)}
-                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
                   >
                     <Plus className="w-5 h-5 stroke-[2.5px]" />
                   </button>
                 </div>
               </div>
 
-              {/* ESTIMASI HARGA TOTAL */}
+              {/* ESTIMASI HARGA TOTAL HASIL RULE ENGINE */}
               <div className="bg-gradient-to-r from-amber-500 to-amber-400 rounded-2xl p-5 sm:p-6 text-slate-900 flex flex-col gap-2 shadow-xl shadow-amber-500/25">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900/80">
-                      Estimasi Total Nilai
+                      Estimasi Nilai Hasil Rule Engine
                     </span>
                     <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
                       <span className="text-2xl sm:text-4xl font-black tracking-tight font-heading">
                         Rp {calculatedTotalPrice.toLocaleString("id-ID")}
                       </span>
-                      <span className="text-[11px] sm:text-xs font-bold text-slate-900 bg-white/40 px-2 py-0.5 sm:py-1 rounded-lg backdrop-blur-sm">
-                        @ {unitPrice.toLocaleString("id-ID")}/
-                        {activeCategory.unit}
+                      <span className="text-[11px] sm:text-xs font-bold text-slate-900 bg-white/40 px-2 py-0.5 sm:py-1 rounded-lg backdrop-blur-xs">
+                        @ {unitPrice.toLocaleString("id-ID")}/{activeCategory.unit}
                       </span>
                     </div>
                   </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/30 text-slate-900 flex items-center justify-center backdrop-blur-sm shadow-inner shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/30 text-slate-900 flex items-center justify-center backdrop-blur-xs shadow-inner shrink-0">
                     <Coins className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5px]" />
                   </div>
                 </div>
               </div>
 
-              {/* Catatan Kecil */}
               <div className="flex items-start gap-3 pt-1 px-1">
                 <Info className="w-4 h-4 shrink-0 text-slate-400 mt-1" />
                 <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                  Estimasi berdasarkan harga pasar terkini. Harga final
-                  ditentukan saat penimbangan langsung di lokasi.
+                  Estimasi dihitung oleh Rule Engine berbasis database harga terkini. Penimbangan presisi dilakukan saat penjemputan/drop-off.
                 </p>
               </div>
             </Card>
@@ -439,7 +617,6 @@ export default function ScanPage() {
               <div className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white p-5 rounded-2xl shadow-lg shadow-teal-500/25 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-white/20 text-white rounded-xl backdrop-blur-md shrink-0">
-                    {/* Gunakan Cpu */}
                     <Cpu className="w-5 h-5 stroke-[2.5px]" />
                   </div>
                   <div>
@@ -447,7 +624,7 @@ export default function ScanPage() {
                       Elektronik Bekas Terdeteksi!
                     </h3>
                     <p className="text-xs text-white/90 font-medium">
-                      Ketahui komponen berharga di dalamnya sebelum dijual.
+                      Lihat komponen berharga di dalamnya sebelum dijual.
                     </p>
                   </div>
                 </div>
@@ -472,8 +649,8 @@ export default function ScanPage() {
                 onClick={() =>
                   router.push(
                     `/pickup?scan_id=${scanResult?.scan_id || ""}&category=${encodeURIComponent(
-                      activeCategory.name,
-                    )}&weight=${currentWeight}`,
+                      activeCategory.name
+                    )}&weight=${currentWeight}`
                   )
                 }
               >
@@ -488,8 +665,8 @@ export default function ScanPage() {
                 onClick={() =>
                   router.push(
                     `/pickup?type=drop_off&scan_id=${scanResult?.scan_id || ""}&category=${encodeURIComponent(
-                      activeCategory.name,
-                    )}`,
+                      activeCategory.name
+                    )}`
                   )
                 }
               >
@@ -516,9 +693,8 @@ export default function ScanPage() {
       {step === "fallback" && !selectedManualCategory && (
         <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300">
           <Card className="p-6 sm:p-8 bg-white border border-slate-200/80 shadow-xl shadow-slate-200/50 rounded-3xl flex flex-col gap-6">
-            {/* Alert Error Message */}
             {errorMessage && (
-              <div className="p-4 bg-amber-50 border border-amber-200/80 rounded-2xl text-sm font-semibold text-amber-800 flex items-center gap-3 shadow-sm">
+              <div className="p-4 bg-amber-50 border border-amber-200/80 rounded-2xl text-sm font-semibold text-amber-800 flex items-center gap-3 shadow-2xs">
                 <AlertTriangle className="w-5 h-5 shrink-0 text-amber-500" />
                 <span>{errorMessage}</span>
               </div>
@@ -529,12 +705,10 @@ export default function ScanPage() {
                 Pilih Kategori Secara Manual
               </h2>
               <p className="text-sm text-slate-600 font-medium mt-1.5">
-                Pilih jenis sampah atau rongsokan di bawah untuk melanjutkan
-                hitung estimasi harga:
+                Pilih jenis sampah atau rongsokan di bawah untuk melanjutkan hitung estimasi harga:
               </p>
             </div>
 
-            {/* Grid options - Premium & Modern */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               {fallbackCategoriesList.map((cat) => (
                 <button
@@ -566,7 +740,7 @@ export default function ScanPage() {
             <Button
               variant="outline"
               onClick={() => setStep("upload")}
-              className="mt-2 py-3.5 rounded-2xl border-slate-200/80 shadow-sm"
+              className="mt-2 py-3.5 rounded-2xl border-slate-200/80 shadow-2xs"
             >
               <ScanLine className="w-4.5 h-4.5 mr-2" />
               Coba Foto Ulang
