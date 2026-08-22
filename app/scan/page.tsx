@@ -196,23 +196,23 @@ export default function ScanPage() {
   return (
     <main className="min-h-screen bg-slate-50/70 p-4 sm:p-6 max-w-2xl mx-auto flex flex-col gap-6 pb-24">
       {/* Header */}
-      <div className="flex items-center gap-4 pt-2">
+      <div className="flex items-center gap-3 sm:gap-4 pt-2">
         <Link href="/">
           <Button
             variant="outline"
-            className="p-3 min-w-[80px] min-h-[50px] rounded-xl border-slate-200/80 shadow-sm bg-white/80 backdrop-blur-sm"
+            className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[80px] min-h-[44px] sm:min-h-[50px] rounded-xl border-slate-200/80 shadow-sm bg-white/80 backdrop-blur-sm flex items-center justify-center"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-heading flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 text-white flex items-center justify-center shadow-md">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-heading flex items-center gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 text-white flex items-center justify-center shadow-md shrink-0">
               <ScanLine className="w-4 h-4" />
             </div>
             EcoScan AI
           </h1>
-          <p className="text-sm font-medium text-slate-500 mt-2">
+          <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5 sm:mt-1">
             Pindai foto sampah & cek estimasi harga pasar
           </p>
         </div>
@@ -364,16 +364,16 @@ export default function ScanPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 pt-1">
+                <div className="flex items-center justify-between gap-2 sm:gap-4 pt-1">
                   <button
                     type="button"
                     onClick={() => handleAdjustWeight(-0.5)}
-                    className="w-14 h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
                   >
                     <Minus className="w-5 h-5 stroke-[2.5px]" />
                   </button>
 
-                  <div className="flex items-baseline gap-2 text-center flex-1 justify-center">
+                  <div className="flex items-baseline gap-1.5 sm:gap-2 text-center flex-1 justify-center min-w-0">
                     <input
                       type="number"
                       step="0.1"
@@ -384,9 +384,9 @@ export default function ScanPage() {
                           Math.max(0.1, parseFloat(e.target.value) || 0.1),
                         )
                       }
-                      className="w-28 text-center text-3xl font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl py-3 focus:ring-4 focus:ring-teal-500/15 focus:outline-none font-heading shadow-sm"
+                      className="w-20 sm:w-28 text-center text-2xl sm:text-3xl font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl py-2.5 sm:py-3 focus:ring-4 focus:ring-teal-500/15 focus:outline-none font-heading shadow-sm"
                     />
-                    <span className="text-lg font-bold text-slate-500">
+                    <span className="text-base sm:text-lg font-bold text-slate-500 shrink-0">
                       {activeCategory.unit}
                     </span>
                   </div>
@@ -394,7 +394,7 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={() => handleAdjustWeight(0.5)}
-                    className="w-14 h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center transition-colors hover:border-teal-400 active:scale-95 shrink-0"
                   >
                     <Plus className="w-5 h-5 stroke-[2.5px]" />
                   </button>
@@ -402,24 +402,24 @@ export default function ScanPage() {
               </div>
 
               {/* ESTIMASI HARGA TOTAL */}
-              <div className="bg-gradient-to-r from-amber-500 to-amber-400 rounded-2xl p-6 text-slate-900 flex flex-col gap-2 shadow-xl shadow-amber-500/25">
+              <div className="bg-gradient-to-r from-amber-500 to-amber-400 rounded-2xl p-5 sm:p-6 text-slate-900 flex flex-col gap-2 shadow-xl shadow-amber-500/25">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col min-w-0">
                     <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900/80">
                       Estimasi Total Nilai
                     </span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl sm:text-4xl font-black tracking-tight font-heading">
+                    <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+                      <span className="text-2xl sm:text-4xl font-black tracking-tight font-heading">
                         Rp {calculatedTotalPrice.toLocaleString("id-ID")}
                       </span>
-                      <span className="text-xs font-bold text-slate-900 bg-white/40 px-2 py-1 rounded-lg backdrop-blur-sm">
+                      <span className="text-[11px] sm:text-xs font-bold text-slate-900 bg-white/40 px-2 py-0.5 sm:py-1 rounded-lg backdrop-blur-sm">
                         @ {unitPrice.toLocaleString("id-ID")}/
                         {activeCategory.unit}
                       </span>
                     </div>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-white/30 text-slate-900 flex items-center justify-center backdrop-blur-sm shadow-inner shrink-0">
-                    <Coins className="w-6 h-6 stroke-[2.5px]" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/30 text-slate-900 flex items-center justify-center backdrop-blur-sm shadow-inner shrink-0">
+                    <Coins className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5px]" />
                   </div>
                 </div>
               </div>

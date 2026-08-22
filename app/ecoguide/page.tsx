@@ -100,16 +100,16 @@ export default function EcoGuidePage() {
       {/* Top Bar Navigation */}
       <div className="flex items-center justify-between gap-3">
         <Link href="/scan">
-          <Button variant="outline" className="p-3 min-w-[48px] min-h-[48px]">
-            <ArrowLeft className="w-6 h-6" />
+          <Button variant="outline" className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[48px] min-h-[44px] sm:min-h-[48px] flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#111827] flex items-center gap-2 font-heading">
-            <Wrench className="w-6 h-6 text-[#0D9488]" />
+          <h1 className="text-lg sm:text-2xl font-bold text-[#111827] flex items-center gap-2 font-heading">
+            <Wrench className="w-5 h-5 sm:w-6 sm:h-6 text-[#0D9488] shrink-0" />
             EcoGuide — Panduan Pembongkaran Aman
           </h1>
-          <p className="text-sm text-[#4B5563]">
+          <p className="text-xs sm:text-sm text-[#4B5563]">
             Panduan bertahap ekstraksi komponen bernilai tinggi pada e-waste
           </p>
         </div>

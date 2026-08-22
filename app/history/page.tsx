@@ -92,23 +92,23 @@ export default function HistoryPage() {
   return (
     <main className="min-h-screen bg-slate-50/70 p-4 sm:p-6 max-w-4xl mx-auto flex flex-col gap-6 pb-24">
       {/* HEADER */}
-      <div className="flex items-center gap-4 pt-2">
+      <div className="flex items-center gap-3 sm:gap-4 pt-2">
         <Link href="/">
           <Button
             variant="outline"
-            className="p-3 min-w-[80px] min-h-[50px] rounded-xl border-slate-200/80 shadow-sm bg-white/80 backdrop-blur-sm"
+            className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[80px] min-h-[44px] sm:min-h-[50px] rounded-xl border-slate-200/80 shadow-sm bg-white/80 backdrop-blur-sm flex items-center justify-center"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-heading flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-md">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-heading flex items-center gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-md shrink-0">
               <History className="w-4 h-4" />
             </div>
             Riwayat Transaksi
           </h1>
-          <p className="text-sm font-medium text-slate-500 mt-2">
+          <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5 sm:mt-1">
             Daftar setoran limbah & penjualan yang telah dilakukan
           </p>
         </div>

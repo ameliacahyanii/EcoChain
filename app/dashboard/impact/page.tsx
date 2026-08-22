@@ -108,7 +108,7 @@ export default function ImpactDashboardPage() {
         <Button
           variant="primary"
           onClick={handleDownloadEsgReport}
-          className="py-3 px-5 text-base shadow-md"
+          className="w-full sm:w-auto py-3 px-5 text-sm sm:text-base shadow-md justify-center"
         >
           <Download className="w-5 h-5 mr-2 stroke-[2.5px]" />
           Unduh Laporan ESG (CSV)

@@ -158,7 +158,7 @@ export default function PengepulDashboardPage() {
         <Button
           variant="primary"
           onClick={() => setIsB2bModalOpen(true)}
-          className="py-3 px-5 text-base shadow-md"
+          className="w-full sm:w-auto py-3 px-5 text-sm sm:text-base shadow-md justify-center"
         >
           <Plus className="w-5 h-5 mr-2 stroke-[2.5px]" />
           Buat Pesanan B2B (EcoVault)
@@ -452,8 +452,8 @@ export default function PengepulDashboardPage() {
       {/* MODAL B2B ORDER FORM                                                 */}
       {/* ==================================================================== */}
       {isB2bModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg bg-white p-6 flex flex-col gap-5 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white p-5 sm:p-6 flex flex-col gap-5 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-neutral-border pb-3">
               <h3 className="text-xl font-bold text-neutral-text flex items-center gap-2">
                 <Lock className="w-6 h-6 text-primary" />

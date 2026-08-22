@@ -600,16 +600,16 @@ export default function PickupPage() {
       {/* Header Bar */}
       <div className="flex items-center justify-between gap-3">
         <Link href="/">
-          <Button variant="outline" className="p-3 min-w-[48px] min-h-[48px]">
-            <ArrowLeft className="w-6 h-6" />
+          <Button variant="outline" className="p-2.5 sm:p-3 min-w-[44px] sm:min-w-[48px] min-h-[44px] sm:min-h-[48px] flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-extrabold text-[#111827] tracking-tight font-heading flex items-center gap-2">
-            <Truck className="w-6 h-6 text-[#16A34A]" />
+          <h1 className="text-lg sm:text-2xl font-extrabold text-[#111827] tracking-tight font-heading flex items-center gap-2">
+            <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-[#16A34A] shrink-0" />
             EcoRoute Penjemputan
           </h1>
-          <p className="text-sm text-[#4B5563]">
+          <p className="text-xs sm:text-sm text-[#4B5563]">
             {role === "pemulung"
               ? "Daftar permintaan jemputan dari Rumah Tangga sekitar"
               : "Jemput di rumah memberdayakan Pemulung Mitra terdekat"}

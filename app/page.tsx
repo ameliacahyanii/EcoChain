@@ -72,102 +72,101 @@ export default function LandingPage() {
                 </Button>
               </Link>
             </div>
-            <div className="pt-8 flex items-start gap-8 lg:gap-12 border-t border-slate-200/80 max-w-2xl mx-auto lg:mx-0 w-full">
-              <div className="flex flex-col items-start">
-                <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 font-heading tracking-tight whitespace-nowrap">
+            <div className="pt-8 grid grid-cols-3 gap-2 sm:gap-6 lg:gap-12 border-t border-slate-200/80 max-w-2xl mx-auto lg:mx-0 w-full text-center sm:text-left">
+              <div className="flex flex-col items-center sm:items-start">
+                <p className="text-xl sm:text-3xl font-extrabold text-emerald-600 font-heading tracking-tight">
                   100%
                 </p>
-                <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5 whitespace-nowrap">
+                <p className="text-[10px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5">
                   Harga Transparan
                 </p>
               </div>
-              <div className="flex flex-col items-start">
-                <p className="text-2xl sm:text-3xl font-extrabold text-teal-600 font-heading tracking-tight whitespace-nowrap">
+              <div className="flex flex-col items-center sm:items-start">
+                <p className="text-xl sm:text-3xl font-extrabold text-teal-600 font-heading tracking-tight">
                   On-Demand
                 </p>
-                <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5 whitespace-nowrap">
+                <p className="text-[10px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5">
                   Jemput Pemulung
                 </p>
               </div>
-              <div className="flex flex-col items-start">
-                <p className="text-2xl sm:text-3xl font-extrabold text-amber-500 font-heading tracking-tight whitespace-nowrap">
+              <div className="flex flex-col items-center sm:items-start">
+                <p className="text-xl sm:text-3xl font-extrabold text-amber-500 font-heading tracking-tight">
                   Escrow B2B
                 </p>
-                <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5 whitespace-nowrap">
+                <p className="text-[10px] sm:text-sm font-bold text-slate-500 leading-tight mt-0.5">
                   EcoVault Safe
                 </p>
               </div>
             </div>
           </div>
 
-          {/* RIGHT IMAGE COLUMN - ILUSTRASI TETAP SAMA */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
-            <div className="relative w-full max-w-lg lg:max-w-[480px] flex flex-col items-center justify-center min-h-[480px]">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-tr from-emerald-200/30 via-teal-200/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
+          {/* RIGHT IMAGE COLUMN - ILUSTRASI RESPONSIF */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end relative w-full overflow-hidden sm:overflow-visible py-4 sm:py-0">
+            <div className="relative w-full max-w-lg lg:max-w-[480px] flex flex-col items-center justify-center min-h-[380px] sm:min-h-[480px]">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-gradient-to-tr from-emerald-200/30 via-teal-200/20 to-transparent blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
 
               {/* === ILUSTRASI EKOSISTEM === */}
-              <div className="relative w-full aspect-square max-w-[420px] flex items-center justify-center z-10">
+              <div className="relative w-full aspect-square max-w-[320px] sm:max-w-[420px] flex items-center justify-center z-10">
                 <div className="absolute inset-0 rounded-full border-[2px] border-emerald-200/70" />
                 <div className="absolute inset-[18%] rounded-full bg-gradient-to-t from-emerald-100/40 via-transparent to-teal-100/40" />
 
                 <div className="absolute inset-0 z-0">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] bg-gradient-to-br from-emerald-300/30 to-transparent rounded-full blur-[25px] transform rotate-45 translate-x-[-80px] translate-y-[-80px]" />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] bg-gradient-to-r from-emerald-300/20 to-transparent rounded-full blur-[25px] transform translate-x-[80px]" />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] bg-gradient-to-tl from-emerald-300/20 to-transparent rounded-full blur-[25px] transform -rotate-45 translate-x-[60px] translate-y-[80px]" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] sm:w-[120px] h-[100px] sm:h-[120px] bg-gradient-to-br from-emerald-300/30 to-transparent rounded-full blur-[20px] transform rotate-45 translate-x-[-60px] sm:translate-x-[-80px] translate-y-[-60px] sm:translate-y-[-80px]" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] sm:w-[120px] h-[100px] sm:h-[120px] bg-gradient-to-r from-emerald-300/20 to-transparent rounded-full blur-[20px] transform translate-x-[60px] sm:translate-x-[80px]" />
                 </div>
 
                 {/* Node Tengah */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white/80 backdrop-blur-xl rounded-full shadow-[0_20px_40px_rgba(16,185,129,0.15)] border border-white/80 flex items-center justify-center z-10">
-                  <div className="w-18 h-18 bg-gradient-to-br from-emerald-500 to-teal-400 rounded-full flex items-center justify-center text-white shadow-inner">
-                    <Recycle className="w-10 h-10 stroke-[2px]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 sm:w-20 h-16 sm:h-20 bg-white/80 backdrop-blur-xl rounded-full shadow-[0_20px_40px_rgba(16,185,129,0.15)] border border-white/80 flex items-center justify-center z-10">
+                  <div className="w-14 sm:w-18 h-14 sm:h-18 bg-gradient-to-br from-emerald-500 to-teal-400 rounded-full flex items-center justify-center text-white shadow-inner">
+                    <Recycle className="w-8 sm:w-10 h-8 sm:h-10 stroke-[2px]" />
                   </div>
                 </div>
 
-                {/* Kartu 1: Rumah Tangga (Kiri Atas) */}
-                <div className="absolute -top-14 left-32 bg-white/85 backdrop-blur-lg p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[110px] hover:scale-105">
-                  <div className="w-10 h-10 rounded-full bg-blue-50/80 text-blue-500 flex items-center justify-center">
-                    <Users className="w-5 h-5 stroke-[1.5px]" />
+                {/* Kartu 1: Rumah Tangga */}
+                <div className="absolute -top-8 sm:-top-14 left-16 sm:left-32 bg-white/85 backdrop-blur-lg p-2.5 sm:p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-1 sm:gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[95px] sm:w-[110px]">
+                  <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-50/80 text-blue-500 flex items-center justify-center">
+                    <Users className="w-4 sm:w-5 h-4 sm:h-5 stroke-[1.5px]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-700 text-center leading-tight">
+                  <span className="text-xs sm:text-sm font-bold text-slate-700 text-center leading-tight">
                     Rumah Tangga
                   </span>
                 </div>
 
-                {/* Kartu 2: Pemulung (Kanan Tengah) */}
-                <div className="absolute -right-10 top-1/2 -translate-y-1/2 bg-white/85 backdrop-blur-lg p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[110px] hover:scale-105">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50/80 text-emerald-500 flex items-center justify-center">
-                    <Bike className="w-5 h-5 stroke-[1.5px]" />
+                {/* Kartu 2: Pemulung */}
+                <div className="absolute -right-2 sm:-right-10 top-1/2 -translate-y-1/2 bg-white/85 backdrop-blur-lg p-2.5 sm:p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-1 sm:gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[95px] sm:w-[110px]">
+                  <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-emerald-50/80 text-emerald-500 flex items-center justify-center">
+                    <Bike className="w-4 sm:w-5 h-4 sm:h-5 stroke-[1.5px]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-700 text-center leading-tight">
+                  <span className="text-xs sm:text-sm font-bold text-slate-700 text-center leading-tight">
                     Pemulung
                   </span>
                 </div>
 
-                {/* Kartu 3: Pengepul (Kiri Bawah) */}
-                <div className="absolute bottom-22 -left-6 bg-white/85 backdrop-blur-lg p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[110px] hover:scale-105">
-                  <div className="w-10 h-10 rounded-full bg-amber-50/80 text-amber-500 flex items-center justify-center">
-                    <Building2 className="w-5 h-5 stroke-[1.5px]" />
+                {/* Kartu 3: Pengepul */}
+                <div className="absolute bottom-16 sm:bottom-22 -left-2 sm:-left-6 bg-white/85 backdrop-blur-lg p-2.5 sm:p-4 rounded-2xl shadow-lg border border-white/90 flex flex-col items-center gap-1 sm:gap-2 z-10 transition-all duration-300 hover:bg-white/95 w-[95px] sm:w-[110px]">
+                  <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-amber-50/80 text-amber-500 flex items-center justify-center">
+                    <Building2 className="w-4 sm:w-5 h-4 sm:h-5 stroke-[1.5px]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-700 text-center leading-tight">
+                  <span className="text-xs sm:text-sm font-bold text-slate-700 text-center leading-tight">
                     Pengepul
                   </span>
                 </div>
               </div>
 
               {/* Floating Price Pill */}
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl px-5 py-3.5 rounded-2xl border border-white/80 shadow-xl flex items-center gap-4 w-[90%] max-w-sm z-20 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-900 flex items-center justify-center font-extrabold shrink-0 shadow-md">
-                  <DollarSign className="w-6 h-6 stroke-[2px]" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-2xl border border-white/80 shadow-xl flex items-center gap-3 sm:gap-4 w-[95%] sm:w-[90%] max-w-sm z-20 transition-all duration-300">
+                <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-900 flex items-center justify-center font-extrabold shrink-0 shadow-md">
+                  <DollarSign className="w-5 sm:w-6 h-5 sm:h-6 stroke-[2px]" />
                 </div>
-                <div className="flex flex-col justify-center">
-                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-tight">
+                <div className="flex flex-col justify-center min-w-0">
+                  <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-wider leading-tight">
                     Estimasi Harga AI
                   </p>
-                  <div className="flex items-baseline gap-1 mt-0.5">
-                    <span className="text-sm font-bold text-slate-500">
+                  <div className="flex items-baseline gap-1 mt-0.5 flex-wrap">
+                    <span className="text-xs sm:text-sm font-bold text-slate-500">
                       Tembaga Super:
                     </span>
-                    <span className="text-base font-extrabold text-emerald-600">
+                    <span className="text-sm sm:text-base font-extrabold text-emerald-600">
                       Rp 95.000/kg
                     </span>
                   </div>
@@ -463,24 +462,20 @@ export default function LandingPage() {
       <footer className="bg-slate-900 text-slate-400 py-16 px-4 sm:px-6 mt-auto border-t border-slate-800">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-12 pb-12 border-b border-slate-800">
           <div className="md:col-span-2 flex flex-col gap-4">
-            <Link href="/" className="flex items-center">
-              <div className="w-12 h-12 flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-10 h-10 flex items-center justify-center transition-transform duration-200">
                 <Image
                   src="/logo-ecochain.png"
                   alt="EcoChain Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-8"
+                  width={36}
+                  height={36}
+                  className="w-9 h-7"
                   priority
                 />
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-20">
-                  <span className="text-2xl font-black text-emerald-500 tracking-tight font-heading group-hover:text-emerald-400 transition-colors">
-                    EcoChain
-                  </span>
-                </div>
-              </div>
+              <span className="text-2xl font-black text-emerald-500 tracking-tight font-heading">
+                EcoChain
+              </span>
             </Link>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed font-medium">
               Platform agregator rantai pasok sirkular berbasis AI yang
@@ -555,7 +550,7 @@ export default function LandingPage() {
       </footer>
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50 w-12 h-12 rounded-full bg-white/80 backdrop-blur-lg border border-slate-200/80 shadow-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white hover:scale-110 transition-all duration-300"
+        className="fixed bottom-20 sm:bottom-24 right-4 md:bottom-8 md:right-8 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-lg border border-slate-200/80 shadow-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white hover:scale-110 transition-all duration-300"
         aria-label="Scroll ke atas"
       >
         <ArrowRight className="w-5 h-5 rotate-[-90deg]" />

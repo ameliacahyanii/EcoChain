@@ -107,34 +107,34 @@ export const Navigation: React.FC = () => {
   return (
     <>
       {/* ========================================== */}
-      {/* DESKTOP HEADER & TOP NAVIGATION BAR         */}
+      {/* DESKTOP & MOBILE HEADER                     */}
       {/* ========================================== */}
       <header className="sticky top-0 z-40 bg-neutral-bg/95 backdrop-blur-sm border-b border-neutral-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 flex items-center justify-center rounded-full bg-primary-light transition-transform duration-200 group-hover:scale-105">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-primary-light transition-transform duration-200 group-hover:scale-105 shrink-0">
               <Image
                 src="/logo-ecochain.png"
                 alt="EcoChain Logo"
                 width={22}
                 height={22}
-                className="w-[30px] h-[22px]"
+                className="w-6 h-5 sm:w-[30px] sm:h-[22px]"
                 priority
               />
             </div>
 
             <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight font-heading text-neutral-text group-hover:text-primary transition-colors">
+              <span className="text-lg sm:text-xl font-black tracking-tight font-heading text-neutral-text group-hover:text-primary transition-colors leading-tight">
                 EcoChain
               </span>
-              <span className="text-[10px] font-bold tracking-[0.15em] uppercase -mt-0.5 text-accent-hover">
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.12em] uppercase text-accent-hover leading-tight">
                 Rantai Pasok Sirkular
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav Links — underline tabs, not a pill-in-pill box */}
+          {/* Desktop Nav Links — underline tabs */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -162,13 +162,13 @@ export const Navigation: React.FC = () => {
           </nav>
 
           {/* Role Switcher & Auth Actions */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Quick Demo Role Switcher */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                className="min-h-[44px] pl-3 pr-3 py-2 rounded-full border border-neutral-border bg-white hover:bg-slate-50 flex items-center gap-2 text-sm font-bold text-neutral-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="min-h-[40px] sm:min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-full border border-neutral-border bg-white hover:bg-slate-50 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-neutral-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
                 title="Pilih Peran Pengguna (Untuk Pengujian Demo)"
               >
                 <span
@@ -177,14 +177,14 @@ export const Navigation: React.FC = () => {
                 <span className="hidden sm:inline font-normal text-slate-400">
                   Peran:
                 </span>
-                <span className="font-extrabold truncate max-w-[110px] sm:max-w-[160px] text-primary">
+                <span className="font-extrabold truncate max-w-[85px] sm:max-w-[160px] text-primary">
                   {roleLabels[role]}
                 </span>
-                <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
+                <RefreshCw className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               </button>
 
               {showRoleDropdown && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl border border-neutral-border py-2 z-50 shadow-lg">
+                <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] bg-white rounded-xl border border-neutral-border py-2 z-50 shadow-lg">
                   <div className="px-4 py-2 border-b border-neutral-border text-[10px] font-black tracking-[0.15em] uppercase text-slate-400">
                     Pilih Peran Demo
                   </div>
@@ -202,7 +202,7 @@ export const Navigation: React.FC = () => {
                         setRole(r);
                         setShowRoleDropdown(false);
                       }}
-                      className={`w-full text-left px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-2.5 min-h-[44px] ${
+                      className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2.5 min-h-[44px] ${
                         role === r
                           ? ROLE_ROW_ACTIVE[r] + " font-bold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -211,7 +211,7 @@ export const Navigation: React.FC = () => {
                       <span
                         className={`w-2 h-2 rounded-full shrink-0 ${ROLE_DOT[r]}`}
                       />
-                      <span className="flex-1">{roleLabels[r]}</span>
+                      <span className="flex-1 truncate">{roleLabels[r]}</span>
                       {role === r && (
                         <span className="text-primary font-bold">✓</span>
                       )}
@@ -225,10 +225,10 @@ export const Navigation: React.FC = () => {
             {isLoggedIn ? (
               <button
                 onClick={() => logout()}
-                className="min-h-[44px] min-w-[44px] px-4 py-2 rounded-full bg-red-50 text-danger font-bold text-sm hover:bg-red-100 flex items-center gap-2 transition-colors border border-danger/20"
+                className="min-h-[40px] sm:min-h-[44px] min-w-[40px] px-3 sm:px-4 py-1.5 rounded-full bg-red-50 text-danger font-bold text-xs sm:text-sm hover:bg-red-100 flex items-center gap-1.5 transition-colors border border-danger/20"
                 title="Keluar Akun"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Keluar</span>
               </button>
             ) : (
@@ -237,17 +237,20 @@ export const Navigation: React.FC = () => {
                   setIsLoggedIn(true);
                   router.push("/");
                 }}
-                className="min-h-[44px] px-5 py-2 rounded-full bg-primary hover:bg-primary-hover text-white font-bold text-sm flex items-center gap-2 transition-colors"
+                className="min-h-[40px] sm:min-h-[44px] px-3 sm:px-5 py-1.5 rounded-full bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors shrink-0"
               >
-                <LogIn className="w-4 h-4" />
-                <span>Masuk Demo</span>
+                <LogIn className="w-4 h-4 shrink-0" />
+                <span className="whitespace-nowrap">Masuk Demo</span>
               </button>
             )}
           </div>
         </div>
       </header>
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-neutral-bg border-t border-neutral-border px-3 py-2">
+      {/* ========================================== */}
+      {/* MOBILE BOTTOM NAVIGATION BAR                */}
+      {/* ========================================== */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-neutral-bg/95 backdrop-blur-md border-t border-neutral-border px-2 py-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-lg">
         <nav className="flex items-center justify-around max-w-md mx-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -256,12 +259,12 @@ export const Navigation: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 select-none"
+                className="flex flex-col items-center justify-center min-h-[44px] min-w-[44px] px-2 py-1 select-none"
                 aria-label={item.label}
               >
                 <span
-                  className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${
-                    isActive ? "bg-primary" : ""
+                  className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
+                    isActive ? "bg-primary text-white shadow-xs" : ""
                   }`}
                 >
                   <Icon
@@ -270,8 +273,8 @@ export const Navigation: React.FC = () => {
                   />
                 </span>
                 <span
-                  className={`text-[11px] leading-tight mt-1 tracking-tight font-semibold ${
-                    isActive ? "text-neutral-text" : "text-slate-400"
+                  className={`text-[10px] leading-tight mt-0.5 tracking-tight font-semibold ${
+                    isActive ? "text-neutral-text font-bold" : "text-slate-400"
                   }`}
                 >
                   {item.label}
@@ -282,8 +285,8 @@ export const Navigation: React.FC = () => {
         </nav>
       </div>
 
-      {/* Bottom spacer for mobile layout */}
-      <div className="md:hidden h-16 w-full" aria-hidden="true" />
+      {/* Bottom spacer for mobile layout to prevent content overlap */}
+      <div className="md:hidden h-20 w-full" aria-hidden="true" />
     </>
   );
 };
