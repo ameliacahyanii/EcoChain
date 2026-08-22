@@ -285,8 +285,6 @@ export const Navigation: React.FC = () => {
         </nav>
       </div>
 
-      {/* Bottom spacer for mobile layout to prevent content overlap */}
-      <div className="md:hidden h-20 w-full" aria-hidden="true" />
     </>
   );
 };
