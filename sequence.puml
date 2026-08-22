@@ -1,0 +1,58 @@
+@startuml EcoChain_AI_Technical_Sequence
+autonumber
+actor "Rumah Tangga" as User
+participant "Next.js Frontend" as Frontend
+participant "Next.js API (/api/scan)" as ScanAPI
+participant "Google Gemini 2.5 Flash" as Gemini
+participant "Supabase PostgreSQL" as DB
+participant "EcoRoute Engine (/api/pickup)" as PickupAPI
+actor "Pemulung Mitra" as Pemulung
+participant "EcoVault Escrow (Midtrans)" as Escrow
+participant "EcoTrack AI" as EcoTrack
+
+== 1. Identifikasi & Scanning Limbah (EcoScan AI) ==
+User -> Frontend: Upload Foto Sampah/E-Waste
+Frontend -> ScanAPI: POST /api/scan (FormData: image, user_id)
+ScanAPI -> DB: SELECT * FROM waste_categories
+DB --> ScanAPI: Katalog Kategori Limbah
+ScanAPI -> Gemini: generateContent(Prompt + Base64 Image)
+activate Gemini
+Gemini --> ScanAPI: JSON {category_name, estimated_weight_kg, confidence, reasoning}
+deactivate Gemini
+
+alt Confidence < 50% atau Gemini Key Error
+    ScanAPI -> ScanAPI: Jalankan Smart Heuristic Fallback
+end
+
+ScanAPI -> DB: INSERT INTO scan_results
+DB --> ScanAPI: scan_id
+ScanAPI --> Frontend: Response JSON (Category, Estimated Price, Reasoning)
+Frontend --> User: Tampilkan Estimasi Harga (Rp) & Detail Scan
+
+== 2. Penjemputan On-Demand (EcoRoute Multi-Tier Dispatch) ==
+User -> Frontend: Klik "Minta Penjemputan On-Demand"
+Frontend -> PickupAPI: POST /api/pickup (latitude, longitude, preferred_time)
+PickupAPI -> PickupAPI: Hitung Haversine Distance
+PickupAPI -> DB: INSERT INTO pickup_requests (status: searching, fallback_tier: 1)
+PickupAPI --> Pemulung: Broadcast Notification (Tier 1: Radius <= 2km)
+
+alt Pemulung Terima Order
+    Pemulung -> PickupAPI: PATCH /api/pickup (action: accept)
+    PickupAPI -> DB: UPDATE status = 'assigned'
+    PickupAPI --> Frontend: Status Updated ('assigned')
+else Timeout 5 Menit / Pemulung Tidak Ada
+    PickupAPI -> PickupAPI: Eskalasi ke Fallback Tier 2 (Radius <= 5km) / Tier 3 (3PL)
+end
+
+== 3. Transaksi B2B & ESG Impact (EcoVault & EcoTrack) ==
+Pemulung -> User: Penjemputan & Bayar Tunai/E-Wallet
+Pemulung -> DB: Update Status 'completed'
+DB -> Escrow: Lock Escrow Order B2B ke Pabrik Daur Ulang
+Escrow --> DB: Status Escrow 'LOCKED'
+DB -> EcoTrack: Trigger Kalkulasi LCA CO2e Saved
+activate EcoTrack
+EcoTrack -> DB: INSERT INTO impact_logs (co2e_kg_saved, tonnage)
+deactivate EcoTrack
+Escrow --> Pemulung: Release Escrow Payment (Pabrik Verifikasi Valid)
+
+@enduml

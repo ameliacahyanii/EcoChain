@@ -1,0 +1,85 @@
+@startuml EcoChain_AI_Business_Flowchart
+skinparam monochrome false
+skinparam Shadowing true
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #16A34A
+skinparam ActivityFontName Arial
+skinparam ActivityFontSize 12
+
+title Flow Detail Cara Kerja AI & Proses Bisnis EcoChain
+
+|Penyetor (Rumah Tangga)|
+start
+:Upload foto limbah / barang bekas;
+:Kirim gambar via API /scan;
+
+|#Teal|EcoScan AI Engine (Gemini 2.5 Flash)|
+:Terima gambar & konversi Base64;
+:Analisis kategori limbah, estimasi berat, & purity score;
+if (AI Response Valid & Confidence >= 50%?) then (Ya)
+  :Ekstraksi JSON terstruktur;
+else (Tidak / Key Error)
+  :Jalankan Smart Heuristic Fallback Engine;
+endif
+
+|EcoChain Pricing Engine|
+:Kalkulasi Dynamic Pricing
+(Harga Base * Bobot * Purity);
+
+|#Teal|EcoGuide AI Engine|
+if (Apakah Material E-Waste?) then (Ya)
+  :Generate panduan pembongkaran aman
+  ekstraksi tembaga, RAM, & lithium;
+else (Tidak)
+endif
+
+|Penyetor (Rumah Tangga)|
+:Konfirmasi & Minta Penjemputan (EcoRoute);
+
+|#Teal|EcoRoute Dispatching Engine|
+:Hitung Jarak Haversine koordinat penjemputan;
+if (Tier 1: Radius <= 2km ada Pemulung Mitra?) then (Ya)
+  :Assign ke Pemulung Mitra Tier 1;
+else (Tidak / Timeout 5m)
+  if (Tier 2: Radius <= 5km ada Pemulung Mitra?) then (Ya)
+    :Eskalasi & Assign ke Pemulung Tier 2;
+  else (Tidak / Timeout 5m)
+    :Tier 3: Eskalasi ke Kurir Logistik 3PL;
+  endif
+endif
+:Optimasi Rute Penjemputan (TSP Routing);
+
+|Pemulung Mitra|
+:Terima order & jemput limbah ke lokasi;
+:Setor limbah ke Lapak Pengepul Mitra;
+
+|Pengepul Mitra (EcoHub)|
+:Timbang ulang & input verifikasi grade fisik;
+
+|#Teal|Fraud Detection AI|
+if (Rasio Densitas Timbangan / Volume AI Normal?) then (Ya)
+  :Input terverifikasi ke Inventaris EcoHub;
+else (Anomali Air/Pasir)
+  :Tandai REQUIRES_MANUAL_INSPECTION;
+endif
+
+|Pengepul Mitra (EcoHub)|
+:Konsolidasi tonase besar & buat B2B Order;
+
+|EcoVault Escrow System|
+:Lock Escrow Payment B2B (Midtrans);
+:Kirim material ke Industri Daur Ulang;
+
+|Industri Daur Ulang|
+:Uji Laboratorium & Verifikasi Kualitas Material;
+:Konfirmasi Penerimaan Material;
+
+|EcoVault Escrow System|
+:Release Escrow Payment ke Pengepul;
+
+|#Teal|EcoTrack AI Impact Engine|
+:Kalkulasi LCA Reduksi Carbon (CO2e Saved);
+:Generate Laporan Kepatuhan ESG (PDF/JSON);
+
+stop
+@enduml
