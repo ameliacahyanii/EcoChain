@@ -26,7 +26,7 @@ export default function LandingPage() {
       {/* ==================================================================== */}
       {/* 1. HERO SECTION                                                     */}
       {/* ==================================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-100/70 via-teal-50/30 to-slate-50/70 pt-12 pb-20 md:pt-24 md:pb-28 px-4 sm:px-6">
+      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-100 via-teal-50/40 to-slate-50/70 pt-4 sm:pt-10 pb-16 md:pt-20 md:pb-28 px-4 sm:px-6">
         {/* Subtle Decorative Glow Orbs */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-300/20 blur-[120px] rounded-full pointer-events-none" />
 

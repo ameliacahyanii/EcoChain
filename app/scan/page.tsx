@@ -209,7 +209,7 @@ export default function ScanPage() {
   const gate = pipeline?.stage4_confidence_gate;
 
   return (
-    <main className="min-h-screen bg-slate-50/70 p-4 sm:p-6 max-w-2xl mx-auto flex flex-col gap-6 pb-24">
+    <main className="min-h-screen bg-slate-50/70 p-3 sm:p-6 pt-3 sm:pt-6 max-w-2xl mx-auto flex flex-col gap-5 sm:gap-6 pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 sm:gap-4 pt-2">
         <Link href="/">
