@@ -101,21 +101,32 @@ export async function runEcoScanPipeline(
   if (apiKey && apiKey !== "your_gemini_api_key_here") {
     try {
       const ai = new GoogleGenAI({ apiKey });
+      const categoryFormattedList = categoriesCatalog
+        .map((c, idx) => `${idx + 1}. "${c.name}" (Grup: ${c.category_group})`)
+        .join("\n");
+
       const prompt = `Anda adalah EcoScan AI Classifier Engine untuk sistem daur ulang & penanganan limbah di Indonesia.
-Analisis foto berikut dan kategorikan berdasarkan katalog resmi:
-[${categoryNamesList}]
+Analisis foto berikut secara cermat dan tentukan jenis material/sampahnya.
+
+Daftar Pilihan Kategori Resmi:
+${categoryFormattedList}
+
+INSTRUKSI PENTING:
+1. Identifikasi material/objek utama dalam gambar (misal: Kardus/Paper, Laptop/HP/PCB, Kabel/Tembaga, Kaleng Aluminium, Besi Tua, Botol Bening PET, Baskom/HDPE, Minyak Jelantah).
+2. Nilai "category_name" HARUS MENGGUNAKAN SALAH SATU STRING EXACT dari daftar di atas (Contoh: "Kertas Kardus Cokelat", "Elektronik - Laptop Bekas", "Logam Tembaga Super", "Logam Aluminium Kaleng", "Plastik PET (Botol Bening)", "Besi Tua / Rongsok").
+3. Jika objek gambar bukan sampah daur ulang atau foto tidak jelas, berikan "category_name": "TIDAK_TERDETEKSI" dan "confidence": 0.2.
 
 Berikan respon HANYA berupa JSON valid tanpa format markdown:
 {
-  "category_name": "<NAMA_KATEGORI_HARUS_EXACT_SAMA_DENGAN_LIST>",
-  "item_condition": "<"Sangat Baik" | "Kotor / Perlu Dibersihkan" | "Rusak Parah / Kontaminasi">",
-  "hazardous_components": ["<sebutkan jika ada baterai/merkuri/asam/komponen berbahaya, atau kosongkan [] jika aman>"],
-  "recycling_recommendation": "<rekomendasi singkat bahasa alami mis: Aman didaur ulang / Perlu pembongkaran khusus>",
-  "estimated_weight_kg": <angka_estimasi_bobot_atau_unit>,
-  "confidence": <angka_desimal_0.00_sampai_1.00>,
-  "secondary_category_name": "<nama_kategori_kemungkinan_kedua>",
-  "secondary_confidence": <angka_desimal_kemungkinan_kedua>,
-  "reasoning": "<penjelasan_singkat_apa_yang_dilihat_dalam_bahasa_indonesia>"
+  "category_name": "<EXACT_NAMA_KATEGORI_DARI_DAFTAR>",
+  "item_condition": "Sangat Baik",
+  "hazardous_components": [],
+  "recycling_recommendation": "<rekomendasi singkat daur ulang>",
+  "estimated_weight_kg": 1.0,
+  "confidence": 0.90,
+  "secondary_category_name": "<kategori_kemungkinan_kedua>",
+  "secondary_confidence": 0.10,
+  "reasoning": "<deskripsi_objek_fisik_yang_terlihat_dalam_bahasa_indonesia>"
 }`;
 
       let responseText = "";
@@ -223,15 +234,39 @@ Berikan respon HANYA berupa JSON valid tanpa format markdown:
   }
 
   // =========================================================================
-  // STAGE 3: Rule Engine + Price Database - Knowledge Lookup
+  // STAGE 3: Rule Engine + Price Database - Knowledge Lookup (Smart Fuzzy Matching)
   // =========================================================================
+  const aiCatName = (stage2.category_name || "").toLowerCase().trim();
+
+  // Flexible multi-tier category matching algorithm
   const matchedCategory =
+    // Tier 1: Exact match
+    categoriesCatalog.find((c) => c.name.toLowerCase().trim() === aiCatName) ||
+    // Tier 2: Substring inclusion (e.g., "Kertas Kardus" in "Kertas Kardus Cokelat")
     categoriesCatalog.find(
-      (c) => c.name.toLowerCase().trim() === stage2.category_name.toLowerCase().trim()
+      (c) =>
+        aiCatName.includes(c.name.toLowerCase().trim()) ||
+        c.name.toLowerCase().trim().includes(aiCatName)
     ) ||
-    categoriesCatalog.find((c) =>
-      stage2.category_name.toLowerCase().includes(c.category_group.toLowerCase())
+    // Tier 3: Keyword fuzzy matching
+    categoriesCatalog.find((c) => {
+      const nameLower = c.name.toLowerCase();
+      if ((aiCatName.includes("kardus") || aiCatName.includes("karton") || aiCatName.includes("paper")) && nameLower.includes("kardus")) return true;
+      if ((aiCatName.includes("laptop") || aiCatName.includes("komputer") || aiCatName.includes("pc")) && nameLower.includes("laptop")) return true;
+      if ((aiCatName.includes("hp") || aiCatName.includes("handphone") || aiCatName.includes("smartphone") || aiCatName.includes("pcb")) && nameLower.includes("smartphone")) return true;
+      if ((aiCatName.includes("tembaga") || aiCatName.includes("kabel") || aiCatName.includes("copper")) && nameLower.includes("tembaga")) return true;
+      if ((aiCatName.includes("kaleng") || aiCatName.includes("aluminium") || aiCatName.includes("can")) && nameLower.includes("aluminium")) return true;
+      if ((aiCatName.includes("besi") || aiCatName.includes("rongsok") || aiCatName.includes("steel") || aiCatName.includes("iron")) && nameLower.includes("besi")) return true;
+      if ((aiCatName.includes("botol") || aiCatName.includes("pet")) && nameLower.includes("pet")) return true;
+      if ((aiCatName.includes("baskom") || aiCatName.includes("hdpe") || aiCatName.includes("tutup")) && nameLower.includes("hdpe")) return true;
+      if ((aiCatName.includes("jelantah") || aiCatName.includes("minyak") || aiCatName.includes("oil")) && nameLower.includes("jelantah")) return true;
+      return false;
+    }) ||
+    // Tier 4: Category Group match
+    categoriesCatalog.find(
+      (c) => c.category_group && aiCatName.includes(c.category_group.toLowerCase())
     ) ||
+    // Tier 5: Fallback catalog item
     categoriesCatalog[0];
 
   let conditionMultiplier = 1.0;
